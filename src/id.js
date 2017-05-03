@@ -93,3 +93,4 @@ MongoID.idParse = function (id) {
   }
 };
 
+export { MongoID };

@@ -1,3 +1,6 @@
+import _ from 'underscore';
+import MinimongoError from './MinimongoError';
+
 // Make sure field names do not contain Mongo restricted
 // characters ('.', '$', '\0').
 // https://docs.mongodb.com/manual/reference/limits/#Restrictions-on-Field-Names

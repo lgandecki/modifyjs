@@ -25,7 +25,10 @@
   "devDependencies": {
     "babel-jest": "^19.0.0",
     "babel-preset-es2015": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1"
+    "babel-preset-es2015-without-strict": "0.0.4",
+    "babel-preset-stage-2": "^6.24.1",
+    "immutability-helper": "^2.2.0",
+    "jest": "^19.0.2"
   },
   "dependencies": {
     "underscore": "^1.8.3"

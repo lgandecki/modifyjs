@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import {Base64} from './base64';
 /**
  * @namespace
  * @summary Namespace for EJSON functions
@@ -514,3 +516,5 @@ EJSON.clone = function (v) {
 // then 'base64' would have to use EJSON.newBinary, and 'ejson' would
 // also have to use 'base64'.)
 EJSON.newBinary = Base64.newBinary;
+
+export { EJSON }

@@ -1,20 +1,26 @@
+import _ from 'underscore';
+import {_f} from './selector';
+
 // Like _.isArray, but doesn't regard polyfilled Uint8Arrays on old browsers as
 // arrays.
 // XXX maybe this should be EJSON.isArray
 isArray = function (x) {
   return _.isArray(x) && !EJSON.isBinary(x);
 };
+export { isArray };
 
 // XXX maybe this should be EJSON.isObject, though EJSON doesn't know about
 // RegExp
 // XXX note that _type(undefined) === 3!!!!
-isPlainObject = LocalCollection._isPlainObject = function (x) {
-  return x && LocalCollection._f._type(x) === 3;
+isPlainObject = function (x) {
+  return x && _f._type(x) === 3;
 };
+export { isPlainObject }
 
 isIndexable = function (x) {
-  return isArray(x) || isPlainObject(x);
+    return isArray(x) || isPlainObject(x);
 };
+export {isIndexable}
 
 // Returns true if this is an object with at least one key and all keys begin
 // with $.  Unless inconsistentOK is set, throws if some keys begin with $ and
@@ -31,15 +37,18 @@ isOperatorObject = function (valueSelector, inconsistentOK) {
     } else if (theseAreOperators !== thisIsOperator) {
       if (!inconsistentOK)
         throw new Error("Inconsistent operator: " +
-                        JSON.stringify(valueSelector));
+          JSON.stringify(valueSelector));
       theseAreOperators = false;
     }
   });
   return !!theseAreOperators;  // {} has no operators
 };
 
+export { isOperatorObject }
 
 // string can be converted to integer
 isNumericKey = function (s) {
-  return /^[0-9]+$/.test(s);
+    return /^[0-9]+$/.test(s);
 };
+
+export { isNumericKey }

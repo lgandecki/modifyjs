@@ -1,4 +1,8 @@
+import _ from 'underscore';
 import { assertHasValidFieldNames, assertIsValidFieldName } from './validation.js';
+import { isPlainObject, isOperatorObject, isIndexable, isNumericKey } from './helpers';
+import {_f} from './selector';
+import MinimongoError from './MinimongoError';
 
 // XXX need a strategy for passing the binding of $ into this
 // function, from the compiled selector
@@ -12,6 +16,11 @@ import { assertHasValidFieldNames, assertIsValidFieldName } from './validation.j
 //   - isInsert is set when _modify is being called to compute the document to
 //     insert as part of an upsert operation. We use this primarily to figure
 //     out when to set the fields in $setOnInsert, if present.
+export default function(doc, mod, options) {
+  return LocalCollection._modify(doc, mod, {...options, returnInsteadOfReplacing: true})
+}
+LocalCollection = window.LocalCollection || global.LocalCollection || {};
+
 LocalCollection._modify = function (doc, mod, options) {
   options = options || {};
   if (!isPlainObject(mod))
@@ -34,7 +43,6 @@ LocalCollection._modify = function (doc, mod, options) {
   } else {
     // apply modifiers to the doc.
     newDoc = EJSON.clone(doc);
-
     _.each(mod, function (operand, op) {
       var modFunc = MODIFIERS[op];
       // Treat $setOnInsert as $set if this is an insert.
@@ -72,17 +80,21 @@ LocalCollection._modify = function (doc, mod, options) {
     });
   }
 
-  // move new document into place.
-  _.each(_.keys(doc), function (k) {
-    // Note: this used to be for (var k in doc) however, this does not
-    // work right in Opera. Deleting from a doc while iterating over it
-    // would sometimes cause opera to skip some keys.
-    if (k !== '_id')
-      delete doc[k];
-  });
-  _.each(newDoc, function (v, k) {
-    doc[k] = v;
-  });
+  if (options.returnInsteadOfReplacing) {
+    return newDoc;
+  } else {
+    // move new document into place.
+    _.each(_.keys(doc), function (k) {
+      // Note: this used to be for (var k in doc) however, this does not
+      // work right in Opera. Deleting from a doc while iterating over it
+      // would sometimes cause opera to skip some keys.
+      if (k !== '_id')
+        delete doc[k];
+    });
+    _.each(newDoc, function (v, k) {
+      doc[k] = v;
+    });
+  }
 };
 
 // for a.b.c.2.d.e, keyparts should be ['a', 'b', 'c', '2', 'd', 'e'],
@@ -318,7 +330,7 @@ var MODIFIERS = {
       // XXX is it correct that we don't do geo-stuff here?
       sortFunction = new Minimongo.Sorter(arg.$sort).getComparator();
       for (var i = 0; i < toPush.length; i++) {
-        if (LocalCollection._f._type(toPush[i]) !== 3) {
+        if (_f._type(toPush[i]) !== 3) {
           throw MinimongoError("$push like modifiers using $sort " +
                       "require all elements to be objects", { field });
         }
@@ -383,7 +395,7 @@ var MODIFIERS = {
     else {
       _.each(values, function (value) {
         for (var i = 0; i < x.length; i++)
-          if (LocalCollection._f._equal(value, x[i]))
+          if (_f._equal(value, x[i]))
             return;
         x.push(value);
       });
@@ -432,7 +444,7 @@ var MODIFIERS = {
             out.push(x[i]);
       } else {
         for (var i = 0; i < x.length; i++)
-          if (!LocalCollection._f._equal(x[i], arg))
+          if (!_f._equal(x[i], arg))
             out.push(x[i]);
       }
       target[field] = out;
@@ -455,7 +467,7 @@ var MODIFIERS = {
       for (var i = 0; i < x.length; i++) {
         var exclude = false;
         for (var j = 0; j < arg.length; j++) {
-          if (LocalCollection._f._equal(x[i], arg[j])) {
+          if (_f._equal(x[i], arg[j])) {
             exclude = true;
             break;
           }
