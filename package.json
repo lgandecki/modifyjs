@@ -21,5 +21,13 @@
   "bugs": {
     "url": "https://github.com/lgandecki/modifyjs/issues"
   },
-  "homepage": "https://github.com/lgandecki/modifyjs#readme"
+  "homepage": "https://github.com/lgandecki/modifyjs#readme",
+  "devDependencies": {
+    "babel-jest": "^19.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1"
+  },
+  "dependencies": {
+    "underscore": "^1.8.3"
+  }
 }
