@@ -1,0 +1,25 @@
+{
+  "name": "modifyjs",
+  "version": "0.0.1",
+  "description": "Modify your objects with a mongo syntax.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lgandecki/modifyjs.git"
+  },
+  "keywords": [
+    "mongo",
+    "update",
+    "modify",
+    "minimongo"
+  ],
+  "author": "Łukasz Gandecki",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lgandecki/modifyjs/issues"
+  },
+  "homepage": "https://github.com/lgandecki/modifyjs#readme"
+}
