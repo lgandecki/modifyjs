@@ -157,8 +157,80 @@ describe("modify", function () {
       expect(updatedObject).toEqual(expectedObject);
     })
   })
-  it("$unset")
-  it("$push")
+  // https://docs.mongodb.com/manual/reference/operator/update/unset/
+  describe("$unset", () => {
+    it("deletes a particular field", () => {
+      const myObject = {sku: "unknown", quantity: 2, instock: true};
+
+      const updatedObject = modify(myObject, {$unset: {quantity: "", instock: ""}});
+
+      const expectedObject = {...myObject};
+      delete expectedObject.quantity;
+      delete expectedObject.instock;
+      expect(updatedObject).toEqual(updatedObject);
+    })
+  })
+  describe("$push", () => {
+    // https://docs.mongodb.com/manual/reference/operator/update/push/#append-a-value-to-an-array
+    it("appends a value to an array", () => {
+      const myObject = {_id: 1, scores: [50]};
+
+      const updatedObject = modify(myObject, {$push: {scores: 89}});
+
+      const expectedObject = update(myObject, {
+        scores: {$push: [89]}
+      });
+      expect(updatedObject).toEqual(expectedObject);
+    });
+    // https://docs.mongodb.com/manual/reference/operator/update/push/#append-multiple-values-to-an-array
+    it("appends multiple values to an array", () => {
+      const myObject = {name: "joe", scores: [50]};
+
+      const updatedObject = modify(myObject, {$push: {scores: {$each: [90, 92, 85]}}});
+
+      const expectedObject = update(myObject, {
+        scores: {$push: [90, 92, 85]}
+      });
+
+      expect(updatedObject).toEqual(expectedObject);
+    })
+    // https://docs.mongodb.com/manual/reference/operator/update/push/#use-push-operator-with-multiple-modifiers
+    // Looks like this is not fully supported in minimongo yet!
+    // I get MinimongoError: $slice in $push must be zero or negative for field 'quizzes'
+    //TODO When I change slice to negative, turns out I don't have minimongo sorter yet, will investigate this later
+    it.skip("can update an array with multiple modifiers", () => {
+      const myObject = {
+        "_id" : 5,
+        "quizzes" : [
+          { "wk": 1, "score" : 10 },
+          { "wk": 2, "score" : 8 },
+          { "wk": 3, "score" : 5 },
+          { "wk": 4, "score" : 6 }
+        ]
+      };
+
+      const updatedObject = modify(myObject, {
+        $push: {
+          quizzes: {
+            $each: [ { wk: 5, score: 8 }, { wk: 6, score: 7 }, { wk: 7, score: 6 } ],
+            $sort: { score: -1 },
+            $slice: 3
+          }
+        }
+      })
+
+      const expectedObject = {
+        "_id" : 5,
+        "quizzes" : [
+          { "wk" : 1, "score" : 10 },
+          { "wk" : 2, "score" : 8 },
+          { "wk" : 5, "score" : 8 }
+        ]
+      };
+
+      expect(updatedObject).toEqual(expectedObject);
+    })
+  })
   it("$pushAll")
   it("$addToSet")
   it("$pop")
