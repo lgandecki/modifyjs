@@ -231,10 +231,143 @@ describe("modify", function () {
       expect(updatedObject).toEqual(expectedObject);
     })
   })
-  it("$pushAll")
-  it("$addToSet")
-  it("$pop")
-  it("$pull")
-  it("$pullAll")
-  it("$rename")
-})
+  // deprecated since mongo 2.4, based on the example of $push "appends multiple values to an array" above
+  //
+  describe("$pushAll", () => {
+    it("appends multiple values to an array without $each", () => {
+      const myObject = {name: "joe", scores: [50]};
+      // compare with - notice the $each
+      // {$push: {scores: {$each: [90, 92, 85]}}};
+
+      const updatedObject = modify(myObject, {$pushAll: {scores: [90, 92, 85]}});
+
+      const expectedObject = update(myObject, {
+        scores: {$push: [90, 92, 85]}
+      });
+
+      expect(updatedObject).toEqual(expectedObject);
+    });
+  })
+  // https://docs.mongodb.com/manual/reference/operator/update/addToSet/#behavior
+  describe("$addToSet", () => {
+    it("appends array with an array", () => {
+        const myObject = { _id: 1, letters: ["a", "b"] };
+
+        const updatedObject = modify(myObject, {$addToSet: {letters: ["c", "d"]}});
+
+        const expectedObject = {_id: 1, letters: ["a", "b", ["c", "d"]]};
+
+        expect(updatedObject).toEqual(expectedObject);
+    })
+    // https://docs.mongodb.com/manual/reference/operator/update/addToSet/#examples
+    it("adds element to an array if element doesn't already exist", () => {
+      const myObject = { _id: 1, item: "polarizing_filter", tags: [ "electronics", "camera" ] };
+
+      const updatedObject = modify(myObject, {$addToSet: {tags: "accessories"}});
+
+      const expectedObject = update(myObject, {tags: {$push: ["accessories"]}});
+
+      expect(updatedObject).toEqual(expectedObject);
+    })
+    it("doesn't add an element to the array if it does already exists", () => {
+      const myObject = { _id: 1, item: "polarizing_filter", tags: [ "electronics", "camera" ] };
+
+      const updatedObject = modify(myObject, {$addToSet: {tags: "camera"}});
+
+      const expectedObject = {...myObject};
+
+      expect(updatedObject).toEqual(expectedObject);
+    });
+    // https://docs.mongodb.com/manual/reference/operator/update/addToSet/#each-modifier
+    it("adds multiple values to the array field with $each modifier, omitting existing ones", () => {
+      const myObject = { _id: 2, item: "cable", tags: [ "electronics", "supplies" ] };
+
+      const updatedObject = modify(myObject, {$addToSet: { tags: { $each: [ "camera", "electronics", "accessories" ] } }});
+
+      const expectedObject = update(myObject, {tags: {$push: ["camera", "accessories"]}});
+
+      expect(updatedObject).toEqual(expectedObject);
+    });
+  });
+  describe("$pop", () => {
+    // https://docs.mongodb.com/manual/reference/operator/update/pop/#remove-the-first-item-of-an-array
+    it("removes the first element from an array", () => {
+      const myObject = { _id: 1, scores: [ 8, 9, 10 ] };
+
+      const updatedObject = modify(myObject, {$pop: {scores: -1}});
+
+      const expectedObject = {_id: 1, scores: [9, 10]};
+      expect(updatedObject).toEqual(expectedObject);
+    });
+    // https://docs.mongodb.com/manual/reference/operator/update/pop/#remove-the-last-item-of-an-array
+    it("removes the last item of an array", () => {
+      const myObject = {_id: 1, scores: [ 9, 10 ]};
+
+      const updatedObject = modify(myObject, { $pop: { scores: 1 } });
+
+      const expectedObject = {_id: 1, scores: [ 9 ]};
+      expect(updatedObject).toEqual(expectedObject);
+    })
+  });
+  describe("$pull", () => {
+    // https://docs.mongodb.com/manual/reference/operator/update/pull/#remove-all-items-that-equals-a-specified-value
+    it.skip("removes all items that equals a specified value", () => {
+      const myObject = {
+        _id: 1,
+        fruits: [ "apples", "pears", "oranges", "grapes", "bananas" ],
+        vegetables: [ "carrots", "celery", "squash", "carrots" ]
+      };
+
+      const updatedObject = modify(myObject, { $pull: { fruits: { $in: [ "apples", "oranges" ] }, vegetables: "carrots" } });
+
+      const expectedObject = {
+        "_id" : 1,
+        "fruits" : [ "pears", "grapes", "bananas" ],
+        "vegetables" : [ "celery", "squash" ]
+      };
+      // notice two carrots missing from the vegetables array
+      expect(updatedObject).toEqual(expectedObject);
+    })
+    // https://docs.mongodb.com/manual/reference/operator/update/pull/#remove-all-items-that-match-a-specified-pull-condition
+    it.skip("Remove All Items That Match a Specified $pull Condition", () => {
+      const myObject = { _id: 1, votes: [ 3, 5, 6, 7, 7, 8 ] }
+
+      const updatedObject = modify(myObject, { $pull: { votes: { $gte: 6 } } });
+
+      const expectedObject = { _id: 1, votes: [  3,  5 ] };
+
+      expect(updatedObject).toEqual(expectedObject);
+    })
+  });
+  describe("$pullAll", () => {
+  // https://docs.mongodb.com/manual/reference/operator/update/pullAll/#up._S_pullAll
+    it("removes all instances of the specified values from an existing array", () => {
+      const myObject = { _id: 1, scores: [ 0, 2, 5, 5, 1, 0 ] };
+
+      const updatedObject = modify(myObject, {$pullAll: {scores: [0, 5]}});
+
+      const expectedObject = {_id: 1, scores: [2, 1]};
+
+      expect(updatedObject).toEqual(expectedObject);
+    })
+  });
+  // https://docs.mongodb.com/manual/reference/operator/update/rename/
+  describe("$rename", () => {
+    it("updates the name of a field", () => {
+      const myObject = {
+        "_id": 1,
+        "alias": [ "The American Cincinnatus", "The American Fabius" ],
+        "mobile": "555-555-5555",
+        "nmae": { "first" : "george", "last" : "washington" }
+      };
+
+      const updatedObject = modify(myObject, {$rename: {"nmae": "name"}});
+
+      const expectedObject = {...myObject};
+      delete expectedObject.nmae;
+      expectedObject.name = {...myObject.nmae};
+
+      expect(updatedObject).toEqual(expectedObject);
+    })
+  });
+});
