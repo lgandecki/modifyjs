@@ -18,7 +18,9 @@ expect(updatedObject).toEqual(expectedObject);
 ```
 
 ### Installation
+```
 npm install modifyjs
+```
 
 ### Implemented:
 ```
