@@ -1,6 +1,6 @@
 {
   "name": "modifyjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Modify your objects with a mongo syntax.",
   "main": "index.js",
   "scripts": {
