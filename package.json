@@ -1,6 +1,6 @@
 {
   "name": "modifyjs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Modify your objects with a mongo syntax.",
   "main": "dist/modify.js",
   "scripts": {
