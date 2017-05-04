@@ -19,7 +19,8 @@ import MinimongoError from './MinimongoError';
 export default function(doc, mod, options) {
   return LocalCollection._modify(doc, mod, {...options, returnInsteadOfReplacing: true})
 }
-LocalCollection = window.LocalCollection || global.LocalCollection || {};
+
+LocalCollection = (window && window.LocalCollection) || (global && global.LocalCollection) || {};
 
 LocalCollection._modify = function (doc, mod, options) {
   options = options || {};
