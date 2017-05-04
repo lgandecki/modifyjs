@@ -2,9 +2,10 @@
   "name": "modifyjs",
   "version": "0.0.2",
   "description": "Modify your objects with a mongo syntax.",
-  "main": "index.js",
+  "main": "dist/modify.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "babel src --out-dir dist"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/lgandecki/modifyjs#readme",
   "devDependencies": {
+    "babel-cli": "^6.24.1",
     "babel-jest": "^19.0.0",
     "babel-preset-es2015-without-strict": "0.0.4",
     "babel-preset-stage-2": "^6.24.1",
