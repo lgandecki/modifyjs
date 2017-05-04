@@ -9,7 +9,10 @@ describe("modify", function () {
       const myObject = {existingItem: "here"};
 
       const updatedObject = modify(myObject, {$currentDate: "lastModified"});
-      expect(updatedObject).toEqual()
+
+
+      const expectedObject = {existingItem: "here", lastModified: new Date()}; // placeholder, obviously wrong
+      expect(updatedObject).toEqual(expectedObject);
     });
   })
   describe("$min", () => {
