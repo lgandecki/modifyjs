@@ -4,39 +4,41 @@ import modify from './modify.js';
 
 // Examples are taken from https://docs.mongodb.com/manual/reference/
 describe("modify", function () {
-  // it("$currentDate", () => {
-  //   const myObject = {existingItem: "here"};
-  //
-  //   const updatedObject = modify(myObject, {$currentDate: "lastModified"});
-  //   expect(updatedObject).toEqual()
-  // })
+  describe("$currentDate", () => {
+    it.skip("sets a field with a currentDate", () => {
+      const myObject = {existingItem: "here"};
+
+      const updatedObject = modify(myObject, {$currentDate: "lastModified"});
+      expect(updatedObject).toEqual()
+    });
+  })
   describe("$min", () => {
     it("updates a field when the passed value is lower than an existing one", () => {
       const myObject = { _id: 1, highScore: 800, lowScore: 200 };
 
       const updatedObject = modify(myObject, {$min: {lowScore: 150}});
 
-      const expectedObject = {...myObject, lowScore: 150}
+      const expectedObject = {...myObject, lowScore: 150};
       expect(updatedObject).toEqual(expectedObject);
-    })
+    });
     it("doesn't update a field when the passed value is higher than an existing one", () => {
       const myObject = { _id: 1, highScore: 800, lowScore: 200 };
 
       const updatedObject = modify(myObject, {$min: {lowScore: 250}});
 
-      const expectedObject = {...myObject}
+      const expectedObject = {...myObject};
       expect(updatedObject).toEqual(expectedObject);
     })
-  })
+  });
   describe("$max", () => {
     it("updates a field when the passed value is higher than an existing one", () => {
-      const myObject = {_id: 1, highScore: 800, lowScore: 200}
+      const myObject = {_id: 1, highScore: 800, lowScore: 200};
 
       const updatedObject = modify(myObject, {$max: {highScore: 950}});
 
       const expectedObject = {...myObject, highScore: 950};
       expect(updatedObject).toEqual(expectedObject);
-    })
+    });
     it("doesn't update a field when the passed value is lower than an existing one", () => {
       const myObject = { _id: 1, highScore: 950, lowScore: 200 };
 
@@ -99,7 +101,7 @@ describe("modify", function () {
       });
 
       expect(updatedObject).toEqual(expectedObject);
-    })
+    });
     // https://docs.mongodb.com/manual/reference/operator/update/set/#set-fields-in-embedded-documents
     it("sets fields in embedded documents", () => {
       const myObject = {
@@ -119,10 +121,10 @@ describe("modify", function () {
         details: {
           make: {$set: "zzz"}
         }
-      })
+      });
 
       expect(updatedObject).toEqual(expectedObject);
-    })
+    });
     // https://docs.mongodb.com/manual/reference/operator/update/set/#set-elements-in-arrays
     it("sets elements in arrays", () => {
       const myObject = {
@@ -156,7 +158,7 @@ describe("modify", function () {
 
       expect(updatedObject).toEqual(expectedObject);
     })
-  })
+  });
   // https://docs.mongodb.com/manual/reference/operator/update/unset/
   describe("$unset", () => {
     it("deletes a particular field", () => {
@@ -169,7 +171,7 @@ describe("modify", function () {
       delete expectedObject.instock;
       expect(updatedObject).toEqual(updatedObject);
     })
-  })
+  });
   describe("$push", () => {
     // https://docs.mongodb.com/manual/reference/operator/update/push/#append-a-value-to-an-array
     it("appends a value to an array", () => {
@@ -193,7 +195,7 @@ describe("modify", function () {
       });
 
       expect(updatedObject).toEqual(expectedObject);
-    })
+    });
     // https://docs.mongodb.com/manual/reference/operator/update/push/#use-push-operator-with-multiple-modifiers
     // Looks like this is not fully supported in minimongo yet!
     // I get MinimongoError: $slice in $push must be zero or negative for field 'quizzes'
@@ -217,7 +219,7 @@ describe("modify", function () {
             $slice: 3
           }
         }
-      })
+      });
 
       const expectedObject = {
         "_id" : 5,
@@ -230,7 +232,7 @@ describe("modify", function () {
 
       expect(updatedObject).toEqual(expectedObject);
     })
-  })
+  });
   // deprecated since mongo 2.4, based on the example of $push "appends multiple values to an array" above
   //
   describe("$pushAll", () => {
@@ -247,7 +249,7 @@ describe("modify", function () {
 
       expect(updatedObject).toEqual(expectedObject);
     });
-  })
+  });
   // https://docs.mongodb.com/manual/reference/operator/update/addToSet/#behavior
   describe("$addToSet", () => {
     it("appends array with an array", () => {
@@ -258,7 +260,7 @@ describe("modify", function () {
         const expectedObject = {_id: 1, letters: ["a", "b", ["c", "d"]]};
 
         expect(updatedObject).toEqual(expectedObject);
-    })
+    });
     // https://docs.mongodb.com/manual/reference/operator/update/addToSet/#examples
     it("adds element to an array if element doesn't already exist", () => {
       const myObject = { _id: 1, item: "polarizing_filter", tags: [ "electronics", "camera" ] };
@@ -268,7 +270,7 @@ describe("modify", function () {
       const expectedObject = update(myObject, {tags: {$push: ["accessories"]}});
 
       expect(updatedObject).toEqual(expectedObject);
-    })
+    });
     it("doesn't add an element to the array if it does already exists", () => {
       const myObject = { _id: 1, item: "polarizing_filter", tags: [ "electronics", "camera" ] };
 
@@ -327,10 +329,10 @@ describe("modify", function () {
       };
       // notice two carrots missing from the vegetables array
       expect(updatedObject).toEqual(expectedObject);
-    })
+    });
     // https://docs.mongodb.com/manual/reference/operator/update/pull/#remove-all-items-that-match-a-specified-pull-condition
     it.skip("Remove All Items That Match a Specified $pull Condition", () => {
-      const myObject = { _id: 1, votes: [ 3, 5, 6, 7, 7, 8 ] }
+      const myObject = { _id: 1, votes: [ 3, 5, 6, 7, 7, 8 ] };
 
       const updatedObject = modify(myObject, { $pull: { votes: { $gte: 6 } } });
 
@@ -349,7 +351,7 @@ describe("modify", function () {
       const expectedObject = {_id: 1, scores: [2, 1]};
 
       expect(updatedObject).toEqual(expectedObject);
-    })
+    });
   });
   // https://docs.mongodb.com/manual/reference/operator/update/rename/
   describe("$rename", () => {
