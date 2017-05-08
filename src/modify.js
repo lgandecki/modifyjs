@@ -1,9 +1,14 @@
-import _ from 'underscore';
+import isObject from 'lodash-es/isObject';
+import forEach from 'lodash-es/forEach';
+import every from 'lodash-es/every';
+import has from 'lodash-es/has';
+import keys from 'lodash-es/keys';
 import { assertHasValidFieldNames, assertIsValidFieldName } from './validation.js';
 import { isPlainObject, isOperatorObject, isIndexable, isNumericKey } from './helpers';
 import {_f} from './selector';
 import MinimongoError from './MinimongoError';
-
+import EJSON from './ejson';
+const _ = {all: every, each: forEach, keys, has, isObject};
 // XXX need a strategy for passing the binding of $ into this
 // function, from the compiled selector
 //
@@ -17,12 +22,11 @@ import MinimongoError from './MinimongoError';
 //     insert as part of an upsert operation. We use this primarily to figure
 //     out when to set the fields in $setOnInsert, if present.
 export default function(doc, mod, options) {
-  return LocalCollection._modify(doc, mod, {...options, returnInsteadOfReplacing: true})
+  return _modify(doc, mod, {...options, returnInsteadOfReplacing: true})
 }
 
-LocalCollection = (window && window.LocalCollection) || (global && global.LocalCollection) || {};
 
-LocalCollection._modify = function (doc, mod, options) {
+const _modify = function (doc, mod, options) {
   options = options || {};
   if (!isPlainObject(mod))
     throw MinimongoError("Modifier must be an object");
@@ -35,9 +39,6 @@ LocalCollection._modify = function (doc, mod, options) {
   var newDoc;
 
   if (!isModifier) {
-    if (mod._id && !EJSON.equals(doc._id, mod._id))
-      throw MinimongoError("Cannot change the _id of a document");
-
     // replace the whole document
     assertHasValidFieldNames(mod);
     newDoc = mod;
@@ -47,8 +48,6 @@ LocalCollection._modify = function (doc, mod, options) {
     _.each(mod, function (operand, op) {
       var modFunc = MODIFIERS[op];
       // Treat $setOnInsert as $set if this is an insert.
-      if (options.isInsert && op === '$setOnInsert')
-        modFunc = MODIFIERS['$set'];
       if (!modFunc)
         throw MinimongoError("Invalid modifier specified " + op);
       _.each(operand, function (arg, keypath) {
@@ -56,13 +55,8 @@ LocalCollection._modify = function (doc, mod, options) {
           throw MinimongoError("An empty update path is not valid.");
         }
 
-        if (keypath === '_id' && op !== '$setOnInsert') {
-          throw MinimongoError("Mod on _id not allowed");
-        }
-
         var keyparts = keypath.split('.');
-
-        if (! _.all(keyparts, _.identity)) {
+        if (!_.all(keyparts)) {
           throw MinimongoError(
             "The update path '" + keypath +
               "' contains an empty field name, which is not allowed.");
@@ -323,19 +317,20 @@ var MODIFIERS = {
     // Parse $sort.
     var sortFunction = undefined;
     if (arg.$sort) {
-      if (slice === undefined)
-        throw MinimongoError("$sort requires $slice to be present", { field });
-      // XXX this allows us to use a $sort whose value is an array, but that's
-      // actually an extension of the Node driver, so it won't work
-      // server-side. Could be confusing!
-      // XXX is it correct that we don't do geo-stuff here?
-      sortFunction = new Minimongo.Sorter(arg.$sort).getComparator();
-      for (var i = 0; i < toPush.length; i++) {
-        if (_f._type(toPush[i]) !== 3) {
-          throw MinimongoError("$push like modifiers using $sort " +
-                      "require all elements to be objects", { field });
-        }
-      }
+      throw MinimongoError("$sort in $push not implemented yet");
+      // if (slice === undefined)
+      //   throw MinimongoError("$sort requires $slice to be present", { field });
+      // // XXX this allows us to use a $sort whose value is an array, but that's
+      // // actually an extension of the Node driver, so it won't work
+      // // server-side. Could be confusing!
+      // // XXX is it correct that we don't do geo-stuff here?
+      // sortFunction = new Minimongo.Sorter(arg.$sort).getComparator();
+      // for (var i = 0; i < toPush.length; i++) {
+      //   if (_f._type(toPush[i]) !== 3) {
+      //     throw MinimongoError("$push like modifiers using $sort " +
+      //                 "require all elements to be objects", { field });
+      //   }
+      // }
     }
 
     // Actually push.
@@ -428,27 +423,28 @@ var MODIFIERS = {
       throw MinimongoError(
         "Cannot apply $pull/pullAll modifier to non-array", { field });
     else {
-      var out = [];
-      if (arg != null && typeof arg === "object" && !(arg instanceof Array)) {
-        // XXX would be much nicer to compile this once, rather than
-        // for each document we modify.. but usually we're not
-        // modifying that many documents, so we'll let it slide for
-        // now
-
-        // XXX Minimongo.Matcher isn't up for the job, because we need
-        // to permit stuff like {$pull: {a: {$gt: 4}}}.. something
-        // like {$gt: 4} is not normally a complete selector.
-        // same issue as $elemMatch possibly?
-        var matcher = new Minimongo.Matcher(arg);
-        for (var i = 0; i < x.length; i++)
-          if (!matcher.documentMatches(x[i]).result)
-            out.push(x[i]);
-      } else {
-        for (var i = 0; i < x.length; i++)
-          if (!_f._equal(x[i], arg))
-            out.push(x[i]);
-      }
-      target[field] = out;
+      throw MinimongoError("$pull not implemented yet")
+      // var out = [];
+      // if (arg != null && typeof arg === "object" && !(arg instanceof Array)) {
+      //   // XXX would be much nicer to compile this once, rather than
+      //   // for each document we modify.. but usually we're not
+      //   // modifying that many documents, so we'll let it slide for
+      //   // now
+      //
+      //   // XXX Minimongo.Matcher isn't up for the job, because we need
+      //   // to permit stuff like {$pull: {a: {$gt: 4}}}.. something
+      //   // like {$gt: 4} is not normally a complete selector.
+      //   // same issue as $elemMatch possibly?
+      //   var matcher = new Minimongo.Matcher(arg);
+      //   for (var i = 0; i < x.length; i++)
+      //     if (!matcher.documentMatches(x[i]).result)
+      //       out.push(x[i]);
+      // } else {
+      //   for (var i = 0; i < x.length; i++)
+      //     if (!_f._equal(x[i], arg))
+      //       out.push(x[i]);
+      // }
+      // target[field] = out;
     }
   },
   $pullAll: function (target, field, arg) {

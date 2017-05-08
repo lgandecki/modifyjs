@@ -1,6 +1,23 @@
 {
-  "presets": [
-    "es2015-without-strict",
-    "stage-2"
-  ]
+  "env": {
+    "dev": {
+      "presets": [
+        "es2015",
+        "stage-2"
+      ]
+    },
+    "rollup": {
+      "presets": [
+        ["latest", {
+          "es2015": {
+            "modules": false
+          }
+        }
+        ],
+        "stage-2"
+      ],
+      "plugins": ["external-helpers"]
+    }
+  }
 }
+

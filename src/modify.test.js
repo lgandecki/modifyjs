@@ -375,4 +375,10 @@ describe("modify", function () {
       expect(updatedObject).toEqual(expectedObject);
     })
   });
+
+
+  it("throws an error when the operand path contains an empty field name", () => {
+    const myObject = {};
+    expect(() => { modify(myObject, {$set: {"test.abc.": "name"}}) }).toThrow(/empty field name/);
+  })
 });

@@ -1,31 +1,31 @@
-import _ from 'underscore';
+import {default as underscoreIsArray} from 'lodash-es/isArray';
+import each from 'lodash-es/each';
 import {_f} from './selector';
+import EJSON from './ejson';
 
+const _ = {isArray: underscoreIsArray, each};
 // Like _.isArray, but doesn't regard polyfilled Uint8Arrays on old browsers as
 // arrays.
 // XXX maybe this should be EJSON.isArray
-isArray = function (x) {
+export const isArray = function (x) {
   return _.isArray(x) && !EJSON.isBinary(x);
 };
-export { isArray };
 
 // XXX maybe this should be EJSON.isObject, though EJSON doesn't know about
 // RegExp
 // XXX note that _type(undefined) === 3!!!!
-isPlainObject = function (x) {
+export const isPlainObject = function (x) {
   return x && _f._type(x) === 3;
 };
-export { isPlainObject }
 
-isIndexable = function (x) {
+export const isIndexable = function (x) {
     return isArray(x) || isPlainObject(x);
 };
-export {isIndexable}
 
 // Returns true if this is an object with at least one key and all keys begin
 // with $.  Unless inconsistentOK is set, throws if some keys begin with $ and
 // others don't.
-isOperatorObject = function (valueSelector, inconsistentOK) {
+export const isOperatorObject = function (valueSelector, inconsistentOK) {
   if (!isPlainObject(valueSelector))
     return false;
 
@@ -44,11 +44,7 @@ isOperatorObject = function (valueSelector, inconsistentOK) {
   return !!theseAreOperators;  // {} has no operators
 };
 
-export { isOperatorObject }
-
 // string can be converted to integer
-isNumericKey = function (s) {
+export const isNumericKey = function (s) {
     return /^[0-9]+$/.test(s);
 };
-
-export { isNumericKey }

@@ -1,3 +1,5 @@
+process.env.BABEL_ENV = 'dev';
+
 module.exports = function (wallaby) {
 
   return {
@@ -7,7 +9,7 @@ module.exports = function (wallaby) {
 
     env: {
       type: 'node',
-      runner: 'node'
+      runner: 'node',
     },
     compilers: {
       '**/*.js': wallaby.compilers.babel()

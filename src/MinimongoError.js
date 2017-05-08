@@ -1,4 +1,4 @@
-MinimongoError = function (message, options={}) {
+export default function (message, options={}) {
   if (typeof message === "string" && options.field) {
     message += ` for field '${options.field}'`;
   }
@@ -7,5 +7,3 @@ MinimongoError = function (message, options={}) {
   e.name = "MinimongoError";
   return e;
 };
-
-export default MinimongoError;

@@ -1,6 +1,5 @@
 import {isArray} from './helpers';
-import {EJSON} from './ejson';
-import {MongoID} from './id';
+import EJSON from './ejson';
 
 export const _f = {
   // XXX for _all and _in, consider building 'inquery' at compile time..
@@ -25,8 +24,6 @@ export const _f = {
       return 9;
     if (EJSON.isBinary(v))
       return 5;
-    if (v instanceof MongoID.ObjectID)
-      return 7;
     return 3; // object
 
     // XXX support some/all of these:

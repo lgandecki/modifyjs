@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import isString from 'lodash-es/isString';
 import MinimongoError from './MinimongoError';
 
 // Make sure field names do not contain Mongo restricted
@@ -11,7 +11,7 @@ const invalidCharMsg = {
 };
 export function assertIsValidFieldName(key) {
   let match;
-  if (_.isString(key) && (match = key.match(/^\$|\.|\0/))) {
+  if (isString(key) && (match = key.match(/^\$|\.|\0/))) {
     throw MinimongoError(`Key ${key} must not ${invalidCharMsg[match[0]]}`);
   }
 };
