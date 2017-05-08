@@ -31,7 +31,7 @@ var customTypes = {};
  * @param {Function} factory A function that deserializes a JSON-compatible value into an instance of your type.  This should match the serialization performed by your type's `toJSONValue` method.
  */
 
-const _ = {has, isNaN: () => lodashIsNan, size, isEmpty, any: some, each, all: every, isArguments, isArray}
+const _ = {has, isNaN: lodashIsNan, size, isEmpty, any: some, each, all: every, isArguments, isArray}
 
 EJSON.isBinary = function (obj) {
   return !!((typeof Uint8Array !== 'undefined' && obj instanceof Uint8Array) ||
