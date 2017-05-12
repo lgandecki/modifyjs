@@ -161,7 +161,6 @@ var findModTarget = function (doc, keyparts, options) {
                       "' of list value " + JSON.stringify(doc[keypart]));
       }
     } else {
-      console.log("Gozdecki: keyPart",keypart);
       if (!(keypart in doc)) {
         if (options.noCreate)
           return undefined;
