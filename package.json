@@ -1,6 +1,6 @@
 {
   "name": "modifyjs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Modify your objects with a mongo syntax.",
   "main": "dist/bundle.js",
   "scripts": {
