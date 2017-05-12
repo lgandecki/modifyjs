@@ -1,22 +1,16 @@
-import {default as underscoreIsArray} from 'lodash-es/isArray';
-import each from 'lodash-es/each';
-import {_f} from './selector';
-import EJSON from './ejson';
+import {default as libIsArray} from './lib/isArray';
+import each from './lib/each';
+import isBinary from './lib/isBinary'
+import isPlainObject from './lib/isPlainObject'
 
-const _ = {isArray: underscoreIsArray, each};
+const _ = {isArray: libIsArray, each};
 // Like _.isArray, but doesn't regard polyfilled Uint8Arrays on old browsers as
 // arrays.
 // XXX maybe this should be EJSON.isArray
 export const isArray = function (x) {
-  return _.isArray(x) && !EJSON.isBinary(x);
+  return _.isArray(x) && !isBinary(x);
 };
 
-// XXX maybe this should be EJSON.isObject, though EJSON doesn't know about
-// RegExp
-// XXX note that _type(undefined) === 3!!!!
-export const isPlainObject = function (x) {
-  return x && _f._type(x) === 3;
-};
 
 export const isIndexable = function (x) {
     return isArray(x) || isPlainObject(x);

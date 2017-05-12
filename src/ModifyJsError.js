@@ -4,6 +4,6 @@ export default function (message, options={}) {
   }
 
   var e = new Error(message);
-  e.name = "MinimongoError";
+  e.name = "ModifyJsError";
   return e;
 };

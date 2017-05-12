@@ -18,5 +18,5 @@ export default {
     }),
     Visualizer()
   ],
-  external: ['underscore']
+  external: ['underscore', 'clone', 'deep-equal']
 };

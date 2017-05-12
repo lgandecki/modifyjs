@@ -1,10 +1,37 @@
 import update from 'immutability-helper';
 import modify from './modify.js';
+import each from './lib/each';
 
 
 // Examples are taken from https://docs.mongodb.com/manual/reference/
 describe("modify", function () {
   describe("$currentDate", () => {
+
+    it('something', () => {
+
+      const testObject = {
+        'first': 1,
+        'second': 2,
+        'third': 3
+      };
+
+      const changedObject = {};
+
+      const expectedObject = {
+        'first': 2,
+        'second': 4,
+        'third': 6
+      };
+      each(testObject, (value, key) => {
+        changedObject[key] = value * 2;
+      })
+      //
+      // Object.keys(testObject).forEach(key => {
+      //   changedObject[key] = testObject[key] * 2;
+      // })
+      expect(changedObject).toEqual(expectedObject);
+    })
+
     it.skip("sets a field with a currentDate", () => {
       const myObject = {existingItem: "here"};
 
@@ -378,7 +405,7 @@ describe("modify", function () {
 
 
   it("throws an error when the operand path contains an empty field name", () => {
-    const myObject = {};
-    expect(() => { modify(myObject, {$set: {"test.abc.": "name"}}) }).toThrow(/empty field name/);
+    expect(() => { modify({}, {$set: {"test.abc.": "name"}}) }).toThrow(/empty field name/);
   })
+
 });
