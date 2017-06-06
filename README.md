@@ -1,7 +1,7 @@
 # modifyjs
 ![Circle CI](https://circleci.com/gh/lgandecki/modifyjs.svg?style=shield)
 
-Modify your objects with a mongo like syntax. This is mostly forked code of a modify function of Meteor's brilliant minimongo package, changed to work without Meteor context, and included nice, readable tests based on a mongodb documentation.
+Modify your objects with a mongo like syntax. This is based on a modify function of Meteor's brilliant minimongo package, cleaned up, rewritten to es6, changed to work without Meteor context, and included nice, readable tests based on a mongodb documentation.
 
 ### Usage
 The usage is shown in the [src/modify.test.js](src/modify.test.js) file, but to show a simple example:
