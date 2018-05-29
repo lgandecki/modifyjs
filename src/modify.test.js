@@ -199,7 +199,7 @@ describe("modify", function () {
       const expectedObject = {...myObject};
       delete expectedObject.quantity;
       delete expectedObject.instock;
-      expect(updatedObject).toEqual(updatedObject);
+      expect(updatedObject).toEqual(expectedObject);
     })
   });
   describe("$push", () => {
